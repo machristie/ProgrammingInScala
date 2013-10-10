@@ -36,3 +36,34 @@ val funcValue = sum _
 // Accoring to programming in Scala, methods and nested
 // functions can't be assigned to a variable or passed as an argument to another
 // function. So what you need to do is make a function value.
+
+
+// Closures
+// open term - function literal with free variables that are closed over
+// closed term - function literal with no free variables
+
+// Repeated parameters
+
+def echo(args: String*) =
+  for (arg <- args) println(arg)
+
+val s = Array("1", "2", "3")
+
+// echo(s) won't work
+echo(s:_*) // will work
+
+
+// Default parameters
+
+def printTime(out: java.io.PrintStream = Console.out) =
+  out.println("time = "+ System.currentTimeMillis())
+
+// Note: you need to specify the parameter type even if it could be
+// inferred from the default value. I don't see a way around this.
+
+
+// Tail recursion
+// If you need to debug tail calls, you can add '-g:notailcalls' to scala
+// Caveats:
+// - no mutual tail recursion
+// - doesn't work with function value objects
