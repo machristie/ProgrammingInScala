@@ -3,9 +3,9 @@ sealed abstract class Tree extends Traversable[Int]
 
 case class Branch(left: Tree, right: Tree) extends Tree {
   def foreach[U](f: Int => U) = {
-    println("left foreach")
+    //println("left foreach")
     left foreach f
-    println("right foreach")
+    //println("right foreach")
     right foreach f
   }
 }
