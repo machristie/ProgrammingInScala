@@ -5,7 +5,8 @@ import collection.mutable.ArrayBuffer
 
 case class LatLng(lat:Double, lng:Double)
 
-final class Polyline private (val encoding: String, val initLat:Double, val initLng:Double) extends LinearSeq[LatLng] {
+class Polyline private (val encoding: String, val initLatLng:LatLng)
+    extends LinearSeq[LatLng] {
 
 //  override def newBuilder: Builder[LatLng, Polyline] =
 //    new ArrayBuffer[LatLng] mapResult Polyline.fromSeq
@@ -24,7 +25,7 @@ final class Polyline private (val encoding: String, val initLat:Double, val init
       else
         i += 1
     }
-    throw new NoSuchElementException("No LatLng at index " + idx)
+    throw new IndexOutOfBoundsException("No LatLng at index " + idx)
   }
 
   def length: Int = {
@@ -57,16 +58,15 @@ final class Polyline private (val encoding: String, val initLat:Double, val init
     }
 
     computeFirstLatLng()
-    val latLng = firstLatLng.get
-    new Polyline(encoding.substring(index), latLng.lat, latLng.lng)
+    new Polyline(encoding.substring(index), firstLatLng.get)
   }
 
   private def computeFirstLatLng() {
 
     if (firstLatLng.isEmpty && encoding.length > 0) {
 
-      val lat = initLat + getNextNumber / 1e5
-      val lng = initLng + getNextNumber / 1e5
+      val lat = initLatLng.lat + getNextNumber
+      val lng = initLatLng.lng + getNextNumber
 
       firstLatLng = Some(LatLng(lat, lng))
     }
@@ -83,13 +83,13 @@ final class Polyline private (val encoding: String, val initLat:Double, val init
       result |= (b & 0x1f) << shift
       shift += 5
     } while (b >= 0x20)
-    return (if ((result & 1) != 0) ~(result >> 1) else (result >> 1))
+    return (if ((result & 1) != 0) ~(result >> 1) else (result >> 1)) / 1e5
   }
 
 }
 
 object Polyline {
 
-  def empty: Polyline = new Polyline("", 0, 0)
-  def fromEncoding(encoding:String) = new Polyline(encoding, 0, 0)
+  def empty: Polyline = new Polyline("", LatLng(0,0))
+  def fromEncoding(encoding:String) = new Polyline(encoding, LatLng(0,0))
 }
